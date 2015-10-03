@@ -56,6 +56,7 @@
            android:id="@+id/included_header"/>
 
   <RelativeLayout
+    android:id="@+id/RelativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
@@ -114,4 +115,4 @@
       android:text="" />
 
   </RelativeLayout>
-</LinearLayout><!-- From: file:/Users/jspall16/Desktop/ftc_app-master/FtcRobotController/src/main/res/layout/activity_ftc_controller.xml -->
+</LinearLayout><!-- From: file:/Users/jspall16/Desktop/FTC-Robotics-395/FtcRobotController/src/main/res/layout/activity_ftc_controller.xml -->

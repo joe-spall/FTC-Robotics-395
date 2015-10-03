@@ -87,8 +87,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"/>
-
-
         </LinearLayout>
       </ScrollView>
     </LinearLayout>
@@ -142,4 +140,4 @@
   </LinearLayout>
 
 </RelativeLayout>
-<!-- From: file:/local/mnt/workspace/jenkins-slave/workspace/FTC_External_Apps_Package/First/lib/FtcCommon/src/main/res/layout/activity_ftc_configuration.xml -->
+<!-- From: file:/Users/tom/AndroidStudioProjects/ftc_sdk/lib/FtcCommon/src/main/res/layout/activity_ftc_configuration.xml -->

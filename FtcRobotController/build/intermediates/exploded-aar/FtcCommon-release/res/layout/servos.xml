@@ -74,6 +74,13 @@
         </EditText>
 
         <TextView
+            android:id="@+id/servo_controller_serialNumber"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
             android:id="@+id/controller_name_text"
             android:layout_marginBottom="30dp"
             android:layout_width="match_parent"
@@ -180,4 +187,4 @@
     </LinearLayout>
   </ScrollView>
 </LinearLayout>
-<!-- From: file:/local/mnt/workspace/jenkins-slave/workspace/FTC_External_Apps_Package/First/lib/FtcCommon/src/main/res/layout/servos.xml -->
+<!-- From: file:/Users/tom/AndroidStudioProjects/ftc_sdk/lib/FtcCommon/src/main/res/layout/servos.xml -->

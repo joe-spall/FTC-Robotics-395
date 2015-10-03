@@ -4,4 +4,4 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:padding="10dp"
-          android:textSize="30sp" /><!-- From: file:/Users/jspall16/Desktop/ftc_app-master/FtcRobotController/src/main/res/layout/spinner_textview.xml -->
+          android:textSize="30sp" /><!-- From: file:/Users/jspall16/Desktop/FTC-Robotics-395/FtcRobotController/src/main/res/layout/spinner_textview.xml -->

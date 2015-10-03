@@ -66,11 +66,17 @@
             android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/servo_controller_name"
+            android:text="@string/legacy_controller_name"
             android:inputType="text"
             android:maxLength="200"
             android:hint="@string/name_prompt_text">
         </EditText>
+        <TextView
+            android:id="@+id/legacy_serialNumber"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/controller_name_text"
@@ -330,4 +336,4 @@
     </LinearLayout>
   </ScrollView>
 </LinearLayout>
-<!-- From: file:/local/mnt/workspace/jenkins-slave/workspace/FTC_External_Apps_Package/First/lib/FtcCommon/src/main/res/layout/legacy.xml --><!-- From: file:/Users/jspall16/Desktop/ftc_app-master/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/layout/legacy.xml -->
+<!-- From: file:/Users/tom/AndroidStudioProjects/ftc_sdk/lib/FtcCommon/src/main/res/layout/legacy.xml --><!-- From: file:/Users/jspall16/Desktop/FTC-Robotics-395/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/layout/legacy.xml -->

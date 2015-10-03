@@ -38,4 +38,4 @@
     android:layout_alignParentBottom="true"
     android:text="@string/launch_wifi_settings" />
 
-</RelativeLayout><!-- From: file:/local/mnt/workspace/jenkins-slave/workspace/FTC_External_Apps_Package/First/lib/FtcCommon/src/main/res/layout/activity_ftc_wifi_channel_selector.xml -->
+</RelativeLayout><!-- From: file:/Users/tom/AndroidStudioProjects/ftc_sdk/lib/FtcCommon/src/main/res/layout/activity_ftc_wifi_channel_selector.xml -->
