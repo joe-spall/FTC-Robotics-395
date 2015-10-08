@@ -48,6 +48,7 @@ public class ServoReadings extends OpMode {
 
     Servo servo1;
     ServoController servoCont1;
+    double servoPosition;
 
     /**
      * Constructor
@@ -96,9 +97,10 @@ public class ServoReadings extends OpMode {
      */
     @Override
     public void loop() {
+        servoPosition = servo1.getPosition();
 
-
-        telemetry.addData("Text", "*** Robot Data***");
+        telemetry.addData("Text", "***Robot Data***");
+        telemetry.addData("servo",  "servo  pwr: " + String.format("%.2f", servoPosition));
         
 
 
