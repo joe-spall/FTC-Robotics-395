@@ -33,12 +33,9 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-import static java.lang.Math.abs;
-import static java.lang.Math.random;
+
 
 /**
  * TeleOp Mode
@@ -48,21 +45,13 @@ import static java.lang.Math.random;
 public class K9TeleOpBirdman extends OpMode {
 
 
-    final static double BUCKET_MIN_RANGE  = 0.10;
-    final static double BUCKET_MAX_RANGE  = 0.90;
-
-    double bucketDelta = 0.01;
-    double leftBucketPosition = 0.1;
-    double rightBucketPosition = 0.9;
-
     DcMotorController wheelController;
     DcMotorController armController;
-    DcMotor motorArm;
+    DcMotor motorArmTop;
+    DcMotor motorArmBottom;
     DcMotor motorRight;
     DcMotor motorLeft;
-    Servo servoBucketLeft;
-    Servo servoBucketRight;
-    ServoController servoBucketController;
+
 
     /**
      * Constructor
@@ -78,9 +67,6 @@ public class K9TeleOpBirdman extends OpMode {
     @Override
     public void init() {
 
-
-
-
         //Wheels init
         motorRight = hardwareMap.dcMotor.get("motor_2");
         motorLeft = hardwareMap.dcMotor.get("motor_1");
@@ -90,18 +76,11 @@ public class K9TeleOpBirdman extends OpMode {
         motorRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
         //Arm init
-        motorArm = hardwareMap.dcMotor.get("motor_3");
+        motorArmTop = hardwareMap.dcMotor.get("motor_3");
+        motorArmBottom = hardwareMap.dcMotor.get("motor_4");
         armController = hardwareMap.dcMotorController.get("armController");
-        motorArm.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-
-        //Bucket init
-        servoBucketLeft = hardwareMap.servo.get("servo_0");
-        servoBucketRight = hardwareMap.servo.get("servo_1");
-        servoBucketController = hardwareMap.servoController.get("bucketController");
-
-
-
-
+        motorArmTop.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorArmBottom.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
     }
 
@@ -121,7 +100,7 @@ public class K9TeleOpBirdman extends OpMode {
 		 *
 		 *              Left Joystick                              Right Joystick
 		 *                                         |
-		 *              Moves Forward              |                Bucket Dump
+		 *              Moves Forward              |
 		 *                   ^ ^                   |                    ^ ^
 		 *                  -----                  |                   -----
 		 *                |       |                |                 |       |
@@ -130,23 +109,40 @@ public class K9TeleOpBirdman extends OpMode {
 		 *                |       |                |                 |       |
 		 *                  -----                  |                   -----
 		 *                   v v                   |                    v v
-		 *                Moves Back               |               Bucket Pickup
+		 *                Moves Back               |
 		 *
+		 *
+		 *
+		 *
+		 *
+		 * Gamepad 2
 		 *
 		 *
 		 *                                        Back
 		 *
 		 *
 		 *
-		 *            Right Trigger                |                 Left Trigger
-		 *                ____                     |                    ____
-		 *               |    |                    |                   |    |
-		 *              |      |                   |                  |      |
-		 *             |        |                  |                 |        |
-		 *             ----------                  |                 ----------
-		 *              Lift Arm                   |                  Lower Arm
-		 *                                         |
-		 *                                         |
+		 *               Right Trigger              |                 Left Trigger
+		 *                   ____                   |                    ____
+		 *                  |    |                  |                   |    |
+		 *                 |      |                 |                  |      |
+		 *                |        |                |                 |        |
+		 *                ----------                |                 ----------
+		 *               Lift Top Arm               |              Lower Bottom Arm
+		 *                                          |
+		 *                                          |
+		 *                                          |
+		 *                Right Bumper              |                 Left Bumper
+		 *                 _________                |                  _________
+		 *                |         |               |                 |         |
+		 *                |         |               |                 |         |
+		 *                -----------               |                 -----------
+		 *              Lift Bottom Arm             |               Lower Bottom Arm
+		 *
+		 *
+		 *
+		 *
+		 *
 		 */
 
         // throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
@@ -158,6 +154,7 @@ public class K9TeleOpBirdman extends OpMode {
         float rightWheel = throttle - direction;
         float leftWheel = throttle + direction;
 
+
         // clip the right/left values so that the values never exceed +/- 1
         rightWheel = Range.clip(rightWheel, -1, 1);
         leftWheel = Range.clip(leftWheel, -1, 1);
@@ -165,58 +162,35 @@ public class K9TeleOpBirdman extends OpMode {
         // scale the joystick value to make it easier to control
         // the robot more precisely at slower speeds.
         rightWheel = (float)scaleInput(rightWheel);
-        leftWheel =  (float)scaleInput(leftWheel);
+        leftWheel = (float)scaleInput(leftWheel);
 
         // write the values to the motors
         motorRight.setPower(rightWheel);
         motorLeft.setPower(leftWheel);
 
 
-        /*//Arm raising and lowering
-        float armPowerPositive = (gamepad1.right_trigger);
-        float armPowerNegative = -(gamepad1.left_trigger);
-        float armFinalPower = 0;
+        //Top arm raising and lowering
+        float armTopPower = gamepad2.right_stick_y;
 
-        armPowerPositive = Range.clip(armPowerPositive, 0, 1);
-        armPowerNegative = Range.clip(armPowerNegative, -1, 0);
+        //Range and scale
+        armTopPower = Range.clip(armTopPower, -1, 1);
+        armTopPower = (float)scaleInput(armTopPower);
 
-        if (abs(armPowerNegative) > armPowerPositive)
-        {
-            armFinalPower = armPowerNegative;
-            motorArm.setPower(armPowerNegative);
-        }
-        else
-        {
-            armFinalPower = armPowerPositive;
-            motorArm.setPower(armPowerPositive);
-        }*/
-
-
-        //Bucket Dumping
-        if(gamepad2.left_trigger > 0)
-        {
-            leftBucketPosition += bucketDelta;
-            rightBucketPosition -= bucketDelta;
-        }
-        if(gamepad2.right_trigger > 0)
-        {
-            leftBucketPosition -= bucketDelta;
-            rightBucketPosition += bucketDelta;
-        }
-
-        leftBucketPosition = Range.clip(leftBucketPosition, BUCKET_MIN_RANGE, BUCKET_MAX_RANGE);
-        rightBucketPosition = Range.clip(rightBucketPosition, BUCKET_MIN_RANGE, BUCKET_MAX_RANGE);
+        //Set power
+        motorArmTop.setPower(armTopPower);
 
 
 
 
-        servoBucketLeft.setPosition(leftBucketPosition);
-        servoBucketRight.setPosition(rightBucketPosition);
+        //Bottom arm raising and lowering
+        float armBottomPower = gamepad2.left_stick_y;
 
+        //Range and scale
+        armBottomPower = Range.clip(armBottomPower, -1, 1);
+        armBottomPower = (float)scaleInput(armBottomPower);
 
-
-
-
+        //Set power
+        motorArmBottom.setPower(armBottomPower);
 
 
 		/*
@@ -224,9 +198,8 @@ public class K9TeleOpBirdman extends OpMode {
 		 */
         telemetry.addData("left wheel pwr",  "left wheel  pwr: " + String.format("%.2f", leftWheel));
         telemetry.addData("right wheel pwr", "right wheel pwr: " + String.format("%.2f", rightWheel));
-        //telemetry.addData("negative arm pwr",  "left  trigger: " + String.format("%.2f", armFinalPower));
-        telemetry.addData("left bucket pwr",  "bucket right pwr: " + String.format("%.2f", rightBucketPosition));
-        telemetry.addData("right bucket pwr",  "bucket left pwr: " + String.format("%.2f", leftBucketPosition));
+        telemetry.addData("top arm pwr",  "top arm dir: " + String.format("%.2f", armTopPower));
+        telemetry.addData("bottom arm pwr",  "bottom arm dir: " + String.format("%.2f", armBottomPower));
 
     }
 
