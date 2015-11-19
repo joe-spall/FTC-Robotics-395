@@ -42,7 +42,7 @@ import com.qualcomm.robotcore.util.Range;
  * <p>
  * Team 395 K9 Tele Op
  */
-public class BirdmanMain extends OpMode {
+public class BirdmanMainWOLift extends OpMode {
 
 
     DcMotorController wheelControllerLeft;
@@ -59,7 +59,7 @@ public class BirdmanMain extends OpMode {
     /**
      * Constructor
      */
-    public BirdmanMain() {
+    public BirdmanMainWOLift() {
 
     }
 
