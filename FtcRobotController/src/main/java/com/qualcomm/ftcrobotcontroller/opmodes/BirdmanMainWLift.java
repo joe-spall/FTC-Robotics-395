@@ -218,49 +218,25 @@ public class BirdmanMainWLift extends OpMode {
 
 
       	//Lift raising
-        float liftUp = gamepad2.right_trigger;
+        float liftElevate = gamepad2.left_stick_y;
 
         //Range and scale
-        liftUp = Range.clip(liftUp, -1, 1);
-        liftUp = (float)scaleInput(liftUp);
+        liftElevate = Range.clip(liftElevate, -1, 1);
+        liftElevate = (float)scaleInput(liftElevate);
 
         //Set power
-        motorLiftUp.setPower(liftUp);
-        motorLiftDown.setPower(-liftUp);
+        motorLiftUp.setPower(liftElevate);
+        motorLiftDown.setPower(-liftElevate);
 
-        //Lift lower
-        float liftDown = gamepad2.left_trigger;
+        //Lift rotate
+        float liftRotate = gamepad2.right_stick_y;
 
         //Range and scale
-        liftDown = Range.clip(liftDown, -1, 1);
-        liftDown = (float)scaleInput(liftDown);
+        liftRotate = Range.clip(liftRotate, -1, 1);
+        liftRotate = (float)scaleInput(liftRotate);
 
         //Set power
-        motorLiftUp.setPower(-liftDown);
-        motorLiftDown.setPower(liftDown);
-
-        //Lift rotate up
-        float liftRotateUp = gamepad2.right_stick_y;
-
-        //Range and scale
-        liftUp = Range.clip(liftUp, -1, 1);
-        liftUp = (float)scaleInput(liftUp);
-
-        //Set power
-        motorLiftUp.setPower(liftUp);
-        motorLiftDown.setPower(-liftUp);
-
-        //Lift raising
-        float liftDown = gamepad2.left_trigger;
-
-        //Range and scale
-        liftDown = Range.clip(liftDown, -1, 1);
-        liftDown = (float)scaleInput(liftDown);
-
-        //Set power
-        motorLiftUp.setPower(-liftDown);
-        motorLiftDown.setPower(liftDown);
-
+        motorLiftRotate.setPower(liftRotate);
 
 
 		/*
@@ -268,8 +244,8 @@ public class BirdmanMainWLift extends OpMode {
 		 */
         telemetry.addData("left wheel pwr",  "left side  pwr: " + String.format("%.2f", leftSide));
         telemetry.addData("right wheel pwr", "right side pwr: " + String.format("%.2f", rightSide));
-        telemetry.addData("top arm pwr",  "top arm pwr: " + String.format("%.2f", armTopPower));
-        telemetry.addData("bottom arm pwr",  "bottom arm pwr: " + String.format("%.2f", armBottomPower));
+        telemetry.addData("lift pwr",  "lift pwr: " + String.format("%.2f", liftElevate));
+        telemetry.addData("rotate pwr",  "rotate pwr: " + String.format("%.2f", liftRotate));
 
     }
 

@@ -56,15 +56,9 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
 
     manager.register("NullOp", NullOp.class);
-    manager.register("K9TeleOpBirdman", K9TeleOpBirdman.class);
     manager.register("BirdmanMainWLift", BirdmanMainWLift.class);
     manager.register("BirdmanMainWOLift", BirdmanMainWOLift.class);
-    manager.register("K9AutoRedFloorBirdman", K9AutoRedFloorBirdman.class);
-    manager.register("K9AutoBlueFloorBirdman", K9AutoBlueFloorBirdman.class);
-    manager.register("K9AutoRedLeftRampBirdman", K9AutoRedLeftRampBirdman.class);
-    manager.register("K9AutoRedRightRampBirdman", K9AutoRedRightRampBirdman.class);
-    manager.register("K9AutoBlueLeftRampBirdman", K9AutoBlueLeftRampBirdman.class);
-    manager.register("K9AutoBlueRightRampBirdman", K9AutoBlueRightRampBirdman.class);
+  
 
     //manager.register("K9TeleOp", K9TeleOp.class);
     //manager.register ("PushBotAuto", PushBotAuto.class);
