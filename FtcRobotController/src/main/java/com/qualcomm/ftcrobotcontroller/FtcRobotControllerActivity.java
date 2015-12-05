@@ -363,7 +363,7 @@ public class FtcRobotControllerActivity extends Activity {
 
   protected void hittingMenuButtonBrightensScreen() {
     ActionBar actionBar = getActionBar();
-    if (actionBar != null) {
+    if (actionBar != null)
       actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
         @Override
         public void onMenuVisibilityChanged(boolean isVisible) {
@@ -371,8 +371,8 @@ public class FtcRobotControllerActivity extends Activity {
             dimmer.handleDimTimer();
           }
         }
-      });
-    }
+    } );
+
   }
 
   public void showToast(final Toast toast) {

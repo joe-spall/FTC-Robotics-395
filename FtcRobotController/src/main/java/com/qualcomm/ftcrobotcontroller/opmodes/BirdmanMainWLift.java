@@ -47,13 +47,17 @@ public class BirdmanMainWLift extends OpMode {
 
     DcMotorController wheelControllerLeft;
     DcMotorController wheelControllerRight;
-    DcMotorController armController;
-    DcMotor motorArmTop;
-    DcMotor motorArmBottom;
+    DcMotorController liftSlideController;
+    DcMotorController liftRotateController;
     DcMotor motorWheel0;
     DcMotor motorWheel1;
     DcMotor motorWheel2;
     DcMotor motorWheel3;
+    DcMotor motorLiftUp;
+    DcMotor motorLiftDown;
+    DcMotor motorLiftRotate;
+
+
 
 
     /**
@@ -90,16 +94,23 @@ public class BirdmanMainWLift extends OpMode {
         motorWheel2.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         motorWheel3.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
-      	//Arm init
-        motorArmTop = hardwareMap.dcMotor.get("motor_5");
-        motorArmBottom = hardwareMap.dcMotor.get("motor_6");
+      	//Lift init
+        motorLiftUp = hardwareMap.dcMotor.get("motor_5");
+        motorLiftDown = hardwareMap.dcMotor.get("motor_6");
+        motorLiftRotate = hardwareMap.dcMotor.get("motor_6");
 
-        //Arm controller init
-        armController = hardwareMap.dcMotorController.get("armController");
+        //Reverse motor
+        motorLiftDown.setDirection(DcMotor.Direction.REVERSE);
 
-        //Arm mode
-        motorArmTop.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorArmBottom.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        //Lift slide controller init
+        liftSlideController = hardwareMap.dcMotorController.get("liftSlideController");
+        liftRotateController = hardwareMap.dcMotorController.get("liftRotateController");
+
+        //Lift mode
+        motorLiftUp.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorLiftDown.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorLiftRotate.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+
 
     }
 
@@ -163,7 +174,7 @@ public class BirdmanMainWLift extends OpMode {
 		 *                 |      |                 |                  |      |
 		 *                |        |                |                 |        |
 		 *                ----------                |                 ----------
-		 *               Lift Top Arm               |              Lower Bottom Arm
+		 *                   Lift                   |                   Lower
 		 *                                          |
 		 *                                          |
 		 *                                          |
@@ -172,7 +183,7 @@ public class BirdmanMainWLift extends OpMode {
 		 *                |         |               |                 |         |
 		 *                |         |               |                 |         |
 		 *                -----------               |                 -----------
-		 *              Lift Bottom Arm             |               Lower Bottom Arm
+		 *                 Rotate up                |                 Rotate down
 		 *
 		 *
 		 *
@@ -206,25 +217,50 @@ public class BirdmanMainWLift extends OpMode {
         motorWheel3.setPower(rightSide);
 
 
-      	//Top arm raising and lowering
-        float armTopPower = gamepad2.right_stick_y;
+      	//Lift raising
+        float liftUp = gamepad2.right_trigger;
 
         //Range and scale
-        armTopPower = Range.clip(armTopPower, -1, 1);
-        armTopPower = (float)scaleInput(armTopPower);
+        liftUp = Range.clip(liftUp, -1, 1);
+        liftUp = (float)scaleInput(liftUp);
 
         //Set power
-        motorArmTop.setPower(armTopPower);
+        motorLiftUp.setPower(liftUp);
+        motorLiftDown.setPower(-liftUp);
 
-        //Bottom arm raising and lowering
-        float armBottomPower = gamepad2.left_stick_y;
+        //Lift lower
+        float liftDown = gamepad2.left_trigger;
 
         //Range and scale
-        armBottomPower = Range.clip(armBottomPower, -1, 1);
-        armBottomPower = (float)scaleInput(armBottomPower);
+        liftDown = Range.clip(liftDown, -1, 1);
+        liftDown = (float)scaleInput(liftDown);
 
         //Set power
-        motorArmBottom.setPower(armBottomPower);
+        motorLiftUp.setPower(-liftDown);
+        motorLiftDown.setPower(liftDown);
+
+        //Lift rotate up
+        float liftRotateUp = gamepad2.right_stick_y;
+
+        //Range and scale
+        liftUp = Range.clip(liftUp, -1, 1);
+        liftUp = (float)scaleInput(liftUp);
+
+        //Set power
+        motorLiftUp.setPower(liftUp);
+        motorLiftDown.setPower(-liftUp);
+
+        //Lift raising
+        float liftDown = gamepad2.left_trigger;
+
+        //Range and scale
+        liftDown = Range.clip(liftDown, -1, 1);
+        liftDown = (float)scaleInput(liftDown);
+
+        //Set power
+        motorLiftUp.setPower(-liftDown);
+        motorLiftDown.setPower(liftDown);
+
 
 
 		/*
