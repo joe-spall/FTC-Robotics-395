@@ -42,18 +42,12 @@ import com.qualcomm.robotcore.util.Range;
  * <p>
  * Team 395 K9 Tele Op
  */
-public class BirdmanMainWLift extends OpMode {
+public class BirdmanTest extends OpMode {
 
 
-    DcMotorController wheelControllerFront;
-    DcMotorController wheelControllerBack;
-    DcMotorController liftController;
+    DcMotorController wheelController;
     DcMotor motorWheel0;
-    DcMotor motorWheel1;
-    DcMotor motorWheel2;
-    DcMotor motorWheel3;
-    DcMotor motorRotate;
-    DcMotor motorLift;
+
 
 
 
@@ -61,7 +55,7 @@ public class BirdmanMainWLift extends OpMode {
     /**
      * Constructor
      */
-    public BirdmanMainWLift() {
+    public BirdmanTest() {
 
     }
 
@@ -74,36 +68,16 @@ public class BirdmanMainWLift extends OpMode {
 
         //Wheels init
         motorWheel0 = hardwareMap.dcMotor.get("motor_1");
-        motorWheel1 = hardwareMap.dcMotor.get("motor_2");
-        motorWheel2 = hardwareMap.dcMotor.get("motor_3");
-        motorWheel3 = hardwareMap.dcMotor.get("motor_4");
 
         //Direction of wheels
         motorWheel0.setDirection(DcMotor.Direction.REVERSE);
-        motorWheel2.setDirection(DcMotor.Direction.REVERSE);
 
         //Wheel controller init
-        wheelControllerFront = hardwareMap.dcMotorController.get("wheelControllerFront");
-        wheelControllerBack = hardwareMap.dcMotorController.get("wheelControllerBack");
+        wheelController = hardwareMap.dcMotorController.get("wheelController");
+
 
         //Wheel mode
         motorWheel0.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorWheel1.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorWheel2.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorWheel3.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-
-      	//Lift init
-        motorRotate = hardwareMap.dcMotor.get("motor_6");
-        motorLift = hardwareMap.dcMotor.get("motor_7");
-
-
-
-        //Lift slide controller init
-        liftController = hardwareMap.dcMotorController.get("liftController");
-
-        //Lift mode
-        motorLift.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorRotate.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
 
     }
@@ -209,57 +183,31 @@ public class BirdmanMainWLift extends OpMode {
         // 1 is full down
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left
         // and 1 is full right
-        float throttle = -gamepad1.left_stick_y;
-        float direction = -gamepad1.right_stick_x;
-        float rightSide = throttle - direction;
-        float leftSide = throttle + direction;
+        float throttle = gamepad1.left_stick_y;
+
 
 
         // clip the right/left values so that the values never exceed +/- 1
-        rightSide = Range.clip(rightSide, -1, 1);
-        leftSide = Range.clip(leftSide, -1, 1);
+        throttle = Range.clip(throttle, -1, 1);
+
 
         // scale the joystick value to make it easier to control
         // the robot more precisely at slower speeds.
-        rightSide = (float)scaleInput(rightSide);
-        leftSide =  (float)scaleInput(leftSide);
+        throttle = (float)scaleInput(throttle);
+
 
         // write the values to the motors
-        motorWheel0.setPower(leftSide);
-        motorWheel1.setPower(rightSide);
-        motorWheel2.setPower(leftSide);
-        motorWheel3.setPower(rightSide);
+        motorWheel0.setPower(throttle);
 
 
 
-        //Lift rotate
-        float rotate = (gamepad2.right_stick_y)/2;
 
-        //Range and scale
-        rotate = Range.clip(rotate, -1, 1);
-        rotate = (float)scaleInput(rotate);
-
-        //Set power
-        motorRotate.setPower(rotate);
-
-
-        //Lift rotate
-        float lift = (gamepad2.left_stick_y);
-
-        //Range and scale
-        lift = Range.clip(lift, -1, 1);
-        lift = (float)scaleInput(lift);
-
-        //Set power
-        motorLift.setPower(lift);
 
 		/*
 		 * Send telemetry data back to driver station.
 		 */
-        telemetry.addData("left wheel pwr",  "left side  pwr: " + String.format("%.2f", leftSide));
-        telemetry.addData("right wheel pwr", "right side pwr: " + String.format("%.2f", rightSide));
-        telemetry.addData("rotate pwr",  "rotate pwr: " + String.format("%.2f", rotate));
-        telemetry.addData("lift pwr",  "lift pwr: " + String.format("%.2f", lift));
+        telemetry.addData("left wheel pwr",  "left side  pwr: " + String.format("%.2f", throttle));
+
 
     }
 
