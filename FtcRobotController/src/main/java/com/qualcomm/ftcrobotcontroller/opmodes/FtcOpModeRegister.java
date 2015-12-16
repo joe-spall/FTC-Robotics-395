@@ -56,23 +56,22 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
 
     manager.register("NullOp", NullOp.class);
-    manager.register("BirdmanMainWLift", BirdmanMainWLift.class);
-    manager.register("BirdmanMainWOLift", BirdmanMainWOLift.class);
-    manager.register("BirdmanTest", BirdmanTest.class);
+
+    //manager.register("MatrixK9TeleOp", MatrixK9TeleOp.class);
+    manager.register("K9TeleOp", K9TeleOp.class);
+    manager.register("K9Line", K9Line.class);
+    manager.register ("PushBotAuto", PushBotAuto.class);
+    manager.register ("PushBotManual", PushBotManual.class);
 
 
-    //manager.register("K9TeleOp", K9TeleOp.class);
-    //manager.register ("PushBotAuto", PushBotAuto.class);
-   // manager.register ("PushBotManual", PushBotManual.class);
 
     /*
      * Uncomment any of the following lines if you want to register an op mode.
      */
+    manager.register("MR Gyro Test", MRGyroTest.class);
 
     //manager.register("AdafruitRGBExample", AdafruitRGBExample.class);
-    //manager.register("MRRGBExample", MRRGBExample.class);
     //manager.register("ColorSensorDriver", ColorSensorDriver.class);
-    //manager.register("HTRGBExample", HTRGBExample.class);
 
     //manager.register("IrSeekerOp", IrSeekerOp.class);
     //manager.register("CompassCalibration", CompassCalibration.class);
@@ -94,11 +93,8 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register ("PushBotOdsFollowEvent", PushBotOdsFollowEvent.class);
     //manager.register ("PushBotTouchEvent", PushBotTouchEvent.class);
 
-    //manager.register("PushBotDriveTouch", PushBotDriveTouch.class);
-    //manager.register("PushBotIrSeek", PushBotIrSeek.class);
-    //manager.register("PushBotSquare", PushBotSquare.class);
-
-
-
+    //manager.register("PushBotDriveTouch", PushBotDriveTouch.java);
+    //manager.register("PushBotIrSeek", PushBotIrSeek.java);
+    //manager.register("PushBotSquare", PushBotSquare.java);
   }
 }
