@@ -54,6 +54,9 @@ public class BirdmanMainWLift extends OpMode {
     DcMotor motorWheel3;
     DcMotor motorRotate;
     DcMotor motorLift;
+    boolean rotateFast;
+    String wheelDrive;
+    boolean driveFast;
 
 
 
@@ -86,24 +89,20 @@ public class BirdmanMainWLift extends OpMode {
         wheelControllerFront = hardwareMap.dcMotorController.get("wheelControllerFront");
         wheelControllerBack = hardwareMap.dcMotorController.get("wheelControllerBack");
 
-        //Wheel mode
-        motorWheel0.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorWheel1.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorWheel2.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorWheel3.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        //Rotate fast
+        rotateFast = false;
 
       	//Lift init
         motorRotate = hardwareMap.dcMotor.get("motor_6");
         motorLift = hardwareMap.dcMotor.get("motor_7");
 
-
+        wheelDrive = "four";
+        driveFast = true;
 
         //Lift slide controller init
         liftController = hardwareMap.dcMotorController.get("liftController");
 
-        //Lift mode
-        motorLift.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorRotate.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+
 
 
     }
@@ -209,6 +208,13 @@ public class BirdmanMainWLift extends OpMode {
         // 1 is full down
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left
         // and 1 is full right
+        boolean startPush = gamepad1.start;
+        boolean backPush = gamepad1.back;
+
+        if(startPush)
+        {
+
+        }
         float throttle = -gamepad1.left_stick_y;
         float direction = -gamepad1.right_stick_x;
         float rightSide = throttle - direction;
@@ -233,17 +239,43 @@ public class BirdmanMainWLift extends OpMode {
 
 
         //Lift rotate
-        float rotate = (gamepad2.right_stick_y)/2;
+        float rotate = (gamepad2.right_stick_y);
+        boolean pushRotateSlowButton = gamepad2.a;
+        boolean pushRotateFastButton = gamepad2.b;
+
+        if(pushRotateSlowButton)
+        {
+            rotateFast = false;
+        }
+
+        if(pushRotateFastButton)
+        {
+            rotateFast = true;
+        }
+
+
+
 
         //Range and scale
         rotate = Range.clip(rotate, -1, 1);
         rotate = (float)scaleInput(rotate);
 
+
         //Set power
-        motorRotate.setPower(rotate);
+        if(rotateFast == true)
+        {
+            motorRotate.setPower(rotate);
+            telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate));
+
+        }
+        else if(rotateFast == false)
+        {
+            motorRotate.setPower(rotate/2);
+            telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate/2));
+        }
 
 
-        //Lift rotate
+        //Lift up
         float lift = (gamepad2.left_stick_y);
 
         //Range and scale
@@ -258,8 +290,9 @@ public class BirdmanMainWLift extends OpMode {
 		 */
         telemetry.addData("left wheel pwr",  "left side  pwr: " + String.format("%.2f", leftSide));
         telemetry.addData("right wheel pwr", "right side pwr: " + String.format("%.2f", rightSide));
-        telemetry.addData("rotate pwr",  "rotate pwr: " + String.format("%.2f", rotate));
+
         telemetry.addData("lift pwr",  "lift pwr: " + String.format("%.2f", lift));
+        telemetry.addData("rotate fast", "rotate fast: " + Boolean.toString(rotateFast));
 
     }
 
@@ -270,6 +303,11 @@ public class BirdmanMainWLift extends OpMode {
      */
     @Override
     public void stop() {
+
+        motorWheel0.setPower(0);
+        motorWheel1.setPower(0);
+        motorWheel2.setPower(0);
+        motorWheel3.setPower(0);
 
     }
 
