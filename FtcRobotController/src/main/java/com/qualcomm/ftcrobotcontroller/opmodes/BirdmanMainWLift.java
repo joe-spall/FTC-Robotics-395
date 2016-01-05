@@ -343,9 +343,16 @@ public class BirdmanMainWLift extends OpMode {
      * the robot more precisely at slower speeds.
      */
     double scaleInput(double dVal)  {
-        
-        double scaleOutput = Math.pow(dVal,3)
-
+        double scaleOutput = 0;
+        if(dVal >= 0)
+        {
+            scaleOutput = (Math.atan((8*dVal)-4) + Math.atan(4))/(2*Math.atan(4));
+        }
+        else
+        {
+            scaleOutput = -((Math.atan((8*(dVal*-1))-4) + Math.atan(4))/(2*Math.atan(4)));
+            
+        }
         return scaleOutput;
     }
 
