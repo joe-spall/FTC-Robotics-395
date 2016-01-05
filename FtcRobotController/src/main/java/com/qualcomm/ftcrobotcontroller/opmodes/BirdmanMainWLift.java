@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+import java.lang.Math;
 
 
 /**
@@ -55,7 +56,7 @@ public class BirdmanMainWLift extends OpMode {
     DcMotor motorRotate;
     DcMotor motorLift;
     boolean rotateFast;
-    String wheelDrive;
+    
     boolean driveFast;
 
 
@@ -96,7 +97,7 @@ public class BirdmanMainWLift extends OpMode {
         motorRotate = hardwareMap.dcMotor.get("motor_6");
         motorLift = hardwareMap.dcMotor.get("motor_7");
 
-        wheelDrive = "four";
+       
         driveFast = true;
 
         //Lift slide controller init
@@ -206,36 +207,20 @@ public class BirdmanMainWLift extends OpMode {
         // 1 is full down
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left
         // and 1 is full right
-        boolean startPushFast = gamepad1.start;
-        boolean backPushSlow = gamepad1.back;
-        boolean aPushFront = gamepad1.a;
-        boolean bPushBack = gamepad1.b;
-        boolean xPushFour = gamepad1.x;
+    
+        boolean aPushFast = gamepad1.a;
+        boolean bPushSlow = gamepad1.b;
+       
         
 
-        if(startPushFast)
+        if(aPushFast)
         {
             driveFast = true;
         }
         
-        if(backPushSlow)
+        if(bPushSlow)
         {
             driveFast = false;
-        }
-        
-        if(aPushFront)
-        {
-            wheelDrive = "front";
-        }
-        
-        if(bPushBack)
-        {
-            wheelDrive = "back";
-        }
-        
-        if(xPushFour)
-        {
-            wheelDrive = "four";
         }
         
         float throttle = -gamepad1.left_stick_y;
@@ -252,66 +237,29 @@ public class BirdmanMainWLift extends OpMode {
         // the robot more precisely at slower speeds.
         rightSide = (float)scaleInput(rightSide);
         leftSide =  (float)scaleInput(leftSide);
-        if(wheelDrive.equals("four"))
+        if(driveFast)
         {
-            if(driveFast)
-            {
-                // write the values to the motors
-                motorWheel0.setPower(leftSide);
-                motorWheel1.setPower(rightSide);
-                motorWheel2.setPower(leftSide);
-                motorWheel3.setPower(rightSide);
-            }
-            else
-            {
-                // write the values to the motors
-                motorWheel0.setPower(leftSide/2);
-                motorWheel1.setPower(rightSide/2);
-                motorWheel2.setPower(leftSide/2);
-                motorWheel3.setPower(rightSide/2);
-            }
+            // write the values to the motors
+            motorWheel0.setPower(leftSide);
+            motorWheel1.setPower(rightSide);
+            motorWheel2.setPower(leftSide);
+            motorWheel3.setPower(rightSide);
         }
-    
-        if(wheelDrive.equals("back"))
+        else
         {
-            if(driveFast)
-            {
-                // write the values to the motors
-                motorWheel2.setPower(leftSide);
-                motorWheel3.setPower(rightSide);
-            }
-            else
-            {
-                // write the values to the motors
-                motorWheel2.setPower(leftSide/2);
-                motorWheel3.setPower(rightSide/2);
-            }
-            
+            // write the values to the motors
+            motorWheel0.setPower(leftSide/2);
+            motorWheel1.setPower(rightSide/2);
+            motorWheel2.setPower(leftSide/2);
+            motorWheel3.setPower(rightSide/2);
         }
         
-        if(wheelDrive.equals("front"))
-        {
-            if(driveFast)
-            {
-                // write the values to the motors
-                motorWheel0.setPower(leftSide);
-                motorWheel1.setPower(rightSide);
-            }
-            else
-            {
-                // write the values to the motors
-                motorWheel0.setPower(leftSide/2);
-                motorWheel1.setPower(rightSide/2);
-            }
-            
-        }
-
+    
         /*
          * Send telemetry data back to driver station.
          */
         
         telemetry.addData("drive fast", "drive fast: " + Boolean.toString(driveFast));
-        telemetry.addData("drive type", "drive type: " + wheelDrive);
         telemetry.addData("left side pwr",  "left side  pwr: " + String.format("%.2f", leftSide));
         telemetry.addData("right side pwr", "right side pwr: " + String.format("%.2f", rightSide));
         
@@ -395,25 +343,10 @@ public class BirdmanMainWLift extends OpMode {
      * the robot more precisely at slower speeds.
      */
     double scaleInput(double dVal)  {
-        double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+        
+        double scaleOutput = Math.pow(dVal,3)
 
-        // get the corresponding index for the scaleInput array.
-        int index = (int) (dVal * 16.0);
-        if (index < 0) {
-            index = -index;
-        } else if (index > 16) {
-            index = 16;
-        }
-
-        double dScale = 0.0;
-        if (dVal < 0) {
-            dScale = -scaleArray[index];
-        } else {
-            dScale = scaleArray[index];
-        }
-
-        return dScale;
+        return scaleOutput;
     }
 
 }
