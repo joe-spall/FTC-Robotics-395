@@ -63,7 +63,10 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register ("PushBotAuto", PushBotAuto.class);
     //manager.register ("PushBotManual", PushBotManual.class);
     manager.register ("BirdmanMainWLift", BirdmanMainWLift.class);
-
+    manager.register ("BirdmanAutoBlueBlue", BirdmanAutoBlueBlue.class);
+    manager.register ("BirdmanAutoBlueRed", BirdmanAutoBlueRed.class);
+    manager.register ("BirdmanAutoRedRed", BirdmanAutoRedRed.class);
+    manager.register ("BirdmanAutoRedBlue", BirdmanAutoRedBlue.class);
 
 
     /*
