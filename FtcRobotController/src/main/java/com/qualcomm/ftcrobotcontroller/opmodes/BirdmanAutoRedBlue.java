@@ -44,7 +44,7 @@ import java.lang.Math;
  * <p>
  * Team 395 K9 Tele Op
  */
-public class BirdAutoRedBlue extends OpMode {
+public class BirdmanAutoRedBlue extends OpMode {
     
     
     DcMotorController wheelControllerFront;
@@ -65,7 +65,7 @@ public class BirdAutoRedBlue extends OpMode {
     /**
      * Constructor
      */
-    public BirdAutoRedBlue() {
+    public BirdmanAutoRedBlue() {
         
     }
     
@@ -91,7 +91,10 @@ public class BirdAutoRedBlue extends OpMode {
         //Wheel controller init
         wheelControllerFront = hardwareMap.dcMotorController.get("wheelControllerFront");
         wheelControllerBack = hardwareMap.dcMotorController.get("wheelControllerBack");
-        
+
+        //Read and write
+      //  motorWheel0.setMode(DcMotorController.RunMode.READ_WRITE);
+
         //Rotate fast
         rotateFast = false;
         
@@ -159,29 +162,31 @@ public class BirdAutoRedBlue extends OpMode {
      */
     @Override
     public void stop() {
-        motorWheel0.setPower(0)
-        motorWheel1.setPower(0)
-        motorWheel2.setPower(0)
-        motorWheel3.setPower(0)
+        motorWheel0.setPower(0);
+        motorWheel1.setPower(0);
+        motorWheel2.setPower(0);
+        motorWheel3.setPower(0);
     }
-    
+
     //Reset encoders
     public void resetEncoders()
     {
-        motorWheel0.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorWheel1.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorWheel2.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorWheel3.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorWheel0.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorWheel1.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorWheel2.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorWheel3.setMode(DcMotorController.RunMode.RESET_ENCODERS);
     }
-    
+
     //Start encoders
     public void startEncoders()
     {
-        motorWheel0.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorWheel1.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorWheel2.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorWheel3.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorWheel0.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorWheel1.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorWheel2.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorWheel3.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
     }
+
+
     
     //Motor power set
     public void motorPower(double powerLeft, double powerRight)
@@ -196,7 +201,7 @@ public class BirdAutoRedBlue extends OpMode {
         boolean returnState = false;
         
         //Check position
-        if(motorRight.getCurrentPosition() >= goalRight && motorLeft.getCurrentPosition() <= goalLeft)
+        if(motorWheel1.getCurrentPosition() >= goalRight && motorWheel0.getCurrentPosition() <= goalLeft)
         {
             returnState = true;
         }
