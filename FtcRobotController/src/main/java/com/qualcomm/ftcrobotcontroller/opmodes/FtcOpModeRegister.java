@@ -63,11 +63,18 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register ("PushBotAuto", PushBotAuto.class);
     //manager.register ("PushBotManual", PushBotManual.class);
     manager.register ("BirdmanMainWLift", BirdmanMainWLift.class);
+    manager.register ("BirdmanStraight", BirdmanStraight.class);
     manager.register ("BirdmanAutoBlueBlue", BirdmanAutoBlueBlue.class);
     manager.register ("BirdmanAutoBlueRed", BirdmanAutoBlueRed.class);
     manager.register ("BirdmanAutoRedRed", BirdmanAutoRedRed.class);
     manager.register ("BirdmanAutoRedBlue", BirdmanAutoRedBlue.class);
+    manager.register ("DankAutoBlue", DankAutoBlue.class);
+    manager.register ("DankAutoRed", DankAutoRed.class);
+    manager.register ("navXProcessedOp", navXProcessedOp.class);
+    manager.register ("navXCollisionDetectionOp", navXCollisionDetectionOp.class);
+    manager.register ("BirdmanMainWSensor", BirdmanMainWSensor.class);
 
+    manager.register ("MRRGBExample", MRRGBExample.class);
 
     /*
      * Uncomment any of the following lines if you want to register an op mode.
