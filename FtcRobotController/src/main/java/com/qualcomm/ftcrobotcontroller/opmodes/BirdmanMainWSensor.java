@@ -37,13 +37,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 import java.lang.Math;
 
+import com.kauailabs.navx.ftc.AHRS;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import java.text.DecimalFormat;
 
 /**
  * TeleOp Mode
  * <p>
  * Team 395 K9 Tele Op
  */
-public class BirdmanMainWLift extends OpMode {
+public class BirdmanMainWSensor extends OpMode {
 
 
     DcMotorController wheelControllerFront;
@@ -58,12 +61,19 @@ public class BirdmanMainWLift extends OpMode {
     boolean rotateFast;
 
     boolean driveFast;
+    boolean preventTip;
+
+    private final int NAVX_DIM_I2C_PORT = 0;
+
+    private String startDate;
+    private ElapsedTime runtime = new ElapsedTime();
+    private AHRS navx_device;
 
 
     /**
      * Constructor
      */
-    public BirdmanMainWLift() {
+    public BirdmanMainWSensor() {
 
     }
 
@@ -75,14 +85,14 @@ public class BirdmanMainWLift extends OpMode {
     public void init() {
 
         //Wheels init
-        motorWheel0 = hardwareMap.dcMotor.get("motor_1");
-        motorWheel1 = hardwareMap.dcMotor.get("motor_2");
-        motorWheel2 = hardwareMap.dcMotor.get("motor_3");
-        motorWheel3 = hardwareMap.dcMotor.get("motor_4");
+        motorWheel0 = hardwareMap.dcMotor.get("motor_0");
+        motorWheel1 = hardwareMap.dcMotor.get("motor_1");
+        motorWheel2 = hardwareMap.dcMotor.get("motor_2");
+        motorWheel3 = hardwareMap.dcMotor.get("motor_3");
 
         //Direction of wheels
-        motorWheel0.setDirection(DcMotor.Direction.REVERSE);
-        motorWheel2.setDirection(DcMotor.Direction.REVERSE);
+        motorWheel1.setDirection(DcMotor.Direction.REVERSE);
+        motorWheel3.setDirection(DcMotor.Direction.REVERSE);
 
         //Wheel controller init
         wheelControllerFront = hardwareMap.dcMotorController.get("wheelControllerFront");
@@ -92,16 +102,22 @@ public class BirdmanMainWLift extends OpMode {
         rotateFast = true;
 
         //Lift init
-        motorRotate = hardwareMap.dcMotor.get("motor_6");
-        motorLift = hardwareMap.dcMotor.get("motor_7");
+        motorRotate = hardwareMap.dcMotor.get("motor_4");
+        motorLift = hardwareMap.dcMotor.get("motor_5");
 
-
+        //Drive fast
         driveFast = true;
+
+        //Prevent tip
+        preventTip = false;
 
         //Lift slide controller init
         liftController = hardwareMap.dcMotorController.get("liftController");
 
-
+        //Sensor
+        navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
+                NAVX_DIM_I2C_PORT,
+                AHRS.DeviceDataType.kProcessedData);
     }
 
     /*
@@ -206,9 +222,17 @@ public class BirdmanMainWLift extends OpMode {
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left
         // and 1 is full right
 
+        boolean connected = navx_device.isConnected();
+        telemetry.addData("1 navX-Device", connected ?
+                "Connected" : "Disconnected" );
+        String gyrocal,pitch;
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
         boolean aPushFast = gamepad1.a;
         boolean bPushSlow = gamepad1.b;
-
+        boolean xPushTip = gamepad1.x;
+        boolean yPushNoTip = gamepad1.y;
 
         if (aPushFast) {
             driveFast = true;
@@ -218,34 +242,108 @@ public class BirdmanMainWLift extends OpMode {
             driveFast = false;
         }
 
-        float throttle = -gamepad1.left_stick_y;
-        float direction = -gamepad1.right_stick_x;
+        if(xPushTip){
+            preventTip = true;
+        }
+
+        if(yPushNoTip){
+            preventTip = false;
+        }
+        float throttle = gamepad1.left_stick_y;
+        float direction = gamepad1.right_stick_x;
         float rightSide = throttle - direction;
         float leftSide = throttle + direction;
+        if(!preventTip) {
 
+            // clip the right/left values so that the values never exceed +/- 1
+            rightSide = Range.clip(rightSide, -1, 1);
+            leftSide = Range.clip(leftSide, -1, 1);
 
-        // clip the right/left values so that the values never exceed +/- 1
-        rightSide = Range.clip(rightSide, -1, 1);
-        leftSide = Range.clip(leftSide, -1, 1);
-
-        // scale the joystick value to make it easier to control
-        // the robot more precisely at slower speeds.
-        rightSide = (float) scaleInput(rightSide);
-        leftSide = (float) scaleInput(leftSide);
-        if (driveFast) {
-            // write the values to the motors
-            motorWheel0.setPower(leftSide);
-            motorWheel1.setPower(rightSide);
-            motorWheel2.setPower(leftSide);
-            motorWheel3.setPower(rightSide);
-        } else {
-            // write the values to the motors
-            motorWheel0.setPower(leftSide / 2);
-            motorWheel1.setPower(rightSide / 2);
-            motorWheel2.setPower(leftSide / 2);
-            motorWheel3.setPower(rightSide / 2);
+            // scale the joystick value to make it easier to control
+            // the robot more precisely at slower speeds.
+            rightSide = (float) scaleInput(rightSide);
+            leftSide = (float) scaleInput(leftSide);
+            if (driveFast) {
+                // write the values to the motors
+                motorWheel0.setPower(leftSide);
+                motorWheel1.setPower(rightSide);
+                motorWheel2.setPower(leftSide);
+                motorWheel3.setPower(rightSide);
+            } else {
+                // write the values to the motors
+                motorWheel0.setPower(leftSide / 2);
+                motorWheel1.setPower(rightSide / 2);
+                motorWheel2.setPower(leftSide / 2);
+                motorWheel3.setPower(rightSide / 2);
+            }
         }
-        
+        else
+        {
+            if ( connected ) {
+                gyrocal = (navx_device.isCalibrating() ? "CALIBRATING" : "Calibration Complete");
+                double pitchNum = navx_device.getPitch();
+                pitch = df.format(navx_device.getPitch());
+                if(pitchNum >= 50.0 && pitchNum <= 90)
+                {
+                    motorWheel2.setPower(-1);
+                    motorWheel3.setPower(-1);
+                }
+                else
+                {
+                    // clip the right/left values so that the values never exceed +/- 1
+                    rightSide = Range.clip(rightSide, -1, 1);
+                    leftSide = Range.clip(leftSide, -1, 1);
+
+                    // scale the joystick value to make it easier to control
+                    // the robot more precisely at slower speeds.
+                    rightSide = (float) scaleInput(rightSide);
+                    leftSide = (float) scaleInput(leftSide);
+                    if (driveFast) {
+                        // write the values to the motors
+                        motorWheel0.setPower(leftSide);
+                        motorWheel1.setPower(rightSide);
+                        motorWheel2.setPower(leftSide);
+                        motorWheel3.setPower(rightSide);
+                    } else {
+                        // write the values to the motors
+                        motorWheel0.setPower(leftSide / 2);
+                        motorWheel1.setPower(rightSide / 2);
+                        motorWheel2.setPower(leftSide / 2);
+                        motorWheel3.setPower(rightSide / 2);
+                    }
+                }
+
+
+            telemetry.addData("GyroCal","GyroCal: "+ gyrocal);
+            telemetry.addData("Pitch","Pitch: "+ pitch);
+
+        }
+        else {
+
+
+                // clip the right/left values so that the values never exceed +/- 1
+                rightSide = Range.clip(rightSide, -1, 1);
+                leftSide = Range.clip(leftSide, -1, 1);
+
+                // scale the joystick value to make it easier to control
+                // the robot more precisely at slower speeds.
+                rightSide = (float) scaleInput(rightSide);
+                leftSide = (float) scaleInput(leftSide);
+                if (driveFast) {
+                    // write the values to the motors
+                    motorWheel0.setPower(leftSide);
+                    motorWheel1.setPower(rightSide);
+                    motorWheel2.setPower(leftSide);
+                    motorWheel3.setPower(rightSide);
+                } else {
+                    // write the values to the motors
+                    motorWheel0.setPower(leftSide / 2);
+                    motorWheel1.setPower(rightSide / 2);
+                    motorWheel2.setPower(leftSide / 2);
+                    motorWheel3.setPower(rightSide / 2);
+                }
+            }
+        }
     
         /*
          * Send telemetry data back to driver station.
@@ -304,30 +402,7 @@ public class BirdmanMainWLift extends OpMode {
 
         telemetry.addData("lift pwr", "lift pwr: " + String.format("%.2f", lift));
 
-        //Sample Code for finalLift
 
-        /*
-        if (gamepad1.y = true) {
-        }
-        long time=System.currentTimeMillis();
-        long endMotor=time+1500;
-        long startRotate=time+1250;
-        long endRotate=time+1500;
-        while(System.currentTimeMillis()<endMotor) {
-
-            driveFast=true;
-            motorWheel0.setPower(.7);
-            motorWheel1.setPower(.7);
-            motorWheel2.setPower(.7);
-            motorWheel3.setPower(.7);
-
-        }
-        while(System.currentTimeMillis()<endRotate && System.current){
-
-        }
-    }
-
-*/
 
 
     }
@@ -346,6 +421,7 @@ public class BirdmanMainWLift extends OpMode {
         motorWheel3.setPower(0);
         motorRotate.setPower(0);
         motorLift.setPower(0);
+        navx_device.close();
 
     }
 

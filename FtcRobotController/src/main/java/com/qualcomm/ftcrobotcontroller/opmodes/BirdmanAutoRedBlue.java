@@ -93,7 +93,7 @@ public class BirdmanAutoRedBlue extends OpMode {
         wheelControllerBack = hardwareMap.dcMotorController.get("wheelControllerBack");
 
         //Read and write
-      //  motorWheel0.setMode(DcMotorController.RunMode.READ_WRITE);
+        //motorWheel0.setMode(DcMotorController.RunMode.READ_WRITE);
 
         //Rotate fast
         rotateFast = false;
@@ -125,7 +125,6 @@ public class BirdmanAutoRedBlue extends OpMode {
         }//Drive forward
         else if(state == 1)
         {
-            startEncoders();
             motorPower(1.0,-1.0);
             if(motorEncoderCheck(2000,-2000))
             {
@@ -175,6 +174,7 @@ public class BirdmanAutoRedBlue extends OpMode {
         motorWheel1.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         motorWheel2.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         motorWheel3.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        startEncoders();
     }
 
     //Start encoders

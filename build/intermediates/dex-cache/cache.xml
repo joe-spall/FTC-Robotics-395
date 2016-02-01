@@ -2,11 +2,25 @@
 <items version="2" >
 
     <item
+        jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\WirelessP2p-release\jars\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="ebf8372b5bc9dc9f596ed438df36481099d51c41">
+        <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-c2ef135dbb0c9c82425995771ccc78daabf0aac3.jar" />
+    </item>
+    <item
         jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\Hardware-release\jars\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="55ecd0b0517650a2cffd06137a40de8af3bbbde3">
         <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-1a54c91719a3cd7dd2838f4cad0974a46c9cdaba.jar" />
+    </item>
+    <item
+        jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\FTC-Robotics-395\navx_ftc-release\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="eaddb63c5e208c3b664727d0285dfbe672cce899">
+        <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-bcd65c29dd2c0110a3bb76f8ea6097c6002a82ca.jar" />
     </item>
     <item
         jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\FtcCommon-release\jars\classes.jar"
@@ -16,25 +30,18 @@
         <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-3c95a8da6fdf6328c7c9c4faabd3e542dc85aa4f.jar" />
     </item>
     <item
-        jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\RobotCore-release\jars\classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="2ec6f06847bccfe30fb8f8f75ce888721e4fd275">
-        <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-826c32a9075b1ec2261f78f1f53e3c6b6c1bc0a7.jar" />
-    </item>
-    <item
-        jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\WirelessP2p-release\jars\classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="ebf8372b5bc9dc9f596ed438df36481099d51c41">
-        <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-c2ef135dbb0c9c82425995771ccc78daabf0aac3.jar" />
-    </item>
-    <item
         jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\ModernRobotics-release\jars\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="ad4adcdf8eb6ff2b3b4fe9f1d676f099db621d60">
         <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-85002a79564de8740b0c9a2b88f694f5ffa17528.jar" />
+    </item>
+    <item
+        jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\RobotCore-release\jars\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2ec6f06847bccfe30fb8f8f75ce888721e4fd275">
+        <dex dex="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\pre-dexed\debug\classes-826c32a9075b1ec2261f78f1f53e3c6b6c1bc0a7.jar" />
     </item>
     <item
         jar="C:\Users\Jacob\Documents\GitHub\FTC-Robotics-395\FtcRobotController\build\intermediates\exploded-aar\Analytics-release\jars\classes.jar"
