@@ -56,8 +56,10 @@ public class BirdmanMainWLift extends OpMode {
     DcMotor motorRotate;
     DcMotor motorLift;
     boolean rotateFast;
-
+    
     boolean driveFast;
+
+
 
 
     /**
@@ -89,13 +91,13 @@ public class BirdmanMainWLift extends OpMode {
         wheelControllerBack = hardwareMap.dcMotorController.get("wheelControllerBack");
 
         //Rotate fast
-        rotateFast = true;
+        rotateFast = false;
 
-        //Lift init
+      	//Lift init
         motorRotate = hardwareMap.dcMotor.get("motor_6");
         motorLift = hardwareMap.dcMotor.get("motor_7");
 
-
+       
         driveFast = true;
 
         //Lift slide controller init
@@ -205,19 +207,22 @@ public class BirdmanMainWLift extends OpMode {
         // 1 is full down
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left
         // and 1 is full right
-
+    
         boolean aPushFast = gamepad1.a;
         boolean bPushSlow = gamepad1.b;
+       
+        
 
-
-        if (aPushFast) {
+        if(aPushFast)
+        {
             driveFast = true;
         }
-
-        if (bPushSlow) {
+        
+        if(bPushSlow)
+        {
             driveFast = false;
         }
-
+        
         float throttle = -gamepad1.left_stick_y;
         float direction = -gamepad1.right_stick_x;
         float rightSide = throttle - direction;
@@ -230,69 +235,78 @@ public class BirdmanMainWLift extends OpMode {
 
         // scale the joystick value to make it easier to control
         // the robot more precisely at slower speeds.
-        rightSide = (float) scaleInput(rightSide);
-        leftSide = (float) scaleInput(leftSide);
-        if (driveFast) {
+        rightSide = (float)scaleInput(rightSide);
+        leftSide =  (float)scaleInput(leftSide);
+        if(driveFast)
+        {
             // write the values to the motors
             motorWheel0.setPower(leftSide);
             motorWheel1.setPower(rightSide);
             motorWheel2.setPower(leftSide);
             motorWheel3.setPower(rightSide);
-        } else {
+        }
+        else
+        {
             // write the values to the motors
-            motorWheel0.setPower(leftSide / 2);
-            motorWheel1.setPower(rightSide / 2);
-            motorWheel2.setPower(leftSide / 2);
-            motorWheel3.setPower(rightSide / 2);
+            motorWheel0.setPower(leftSide/2);
+            motorWheel1.setPower(rightSide/2);
+            motorWheel2.setPower(leftSide/2);
+            motorWheel3.setPower(rightSide/2);
         }
         
     
         /*
          * Send telemetry data back to driver station.
          */
-
+        
         telemetry.addData("drive fast", "drive fast: " + Boolean.toString(driveFast));
-        telemetry.addData("left side pwr", "left side  pwr: " + String.format("%.2f", leftSide));
+        telemetry.addData("left side pwr",  "left side  pwr: " + String.format("%.2f", leftSide));
         telemetry.addData("right side pwr", "right side pwr: " + String.format("%.2f", rightSide));
-
+        
         //Lift rotate
         float rotate = gamepad2.right_stick_y;
-        boolean aRotateSlow = gamepad2.a;
-        boolean bRotateFast = gamepad2.b;
+        boolean pushRotateSlowButton = gamepad2.a;
+        boolean pushRotateFastButton = gamepad2.b;
 
-        if (aRotateSlow) {
+        if(pushRotateSlowButton)
+        {
             rotateFast = false;
         }
 
-        if (bRotateFast) {
+        if(pushRotateFastButton)
+        {
             rotateFast = true;
         }
 
         telemetry.addData("rotate fast", "rotate fast: " + Boolean.toString(rotateFast));
 
 
+
         //Range and scale
         rotate = Range.clip(rotate, -1, 1);
-        rotate = (float) scaleInput(rotate);
+        rotate = (float)scaleInput(rotate);
 
 
         //Set power
-        if (rotateFast == true) {
+        if(rotateFast == true)
+        {
             motorRotate.setPower(rotate);
             telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate));
 
-        } else if (rotateFast == false) {
-            motorRotate.setPower(rotate / 2);
-            telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate / 2));
+        }
+        else if(rotateFast == false)
+        {
+            motorRotate.setPower(rotate/2);
+            telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate/2));
         }
 
 
         //Lift up
-        float lift = -(gamepad2.left_stick_y);
+        float lift = (gamepad2.left_stick_y);
 
         //Range and scale
         lift = Range.clip(lift, -1, 1);
-        lift = (float) scaleInput(lift);
+        lift = (float)scaleInput(lift);
 
         //Set power
         motorLift.setPower(lift);
@@ -300,35 +314,9 @@ public class BirdmanMainWLift extends OpMode {
 		/*
 		 * Send telemetry data back to driver station.
 		 */
+        
 
-
-        telemetry.addData("lift pwr", "lift pwr: " + String.format("%.2f", lift));
-
-        //Sample Code for finalLift
-
-        /*
-        if (gamepad1.y = true) {
-        }
-        long time=System.currentTimeMillis();
-        long endMotor=time+1500;
-        long startRotate=time+1250;
-        long endRotate=time+1500;
-        while(System.currentTimeMillis()<endMotor) {
-
-            driveFast=true;
-            motorWheel0.setPower(.7);
-            motorWheel1.setPower(.7);
-            motorWheel2.setPower(.7);
-            motorWheel3.setPower(.7);
-
-        }
-        while(System.currentTimeMillis()<endRotate && System.current){
-
-        }
-    }
-
-*/
-
+        telemetry.addData("lift pwr",  "lift pwr: " + String.format("%.2f", lift));
 
     }
 
@@ -356,9 +344,16 @@ public class BirdmanMainWLift extends OpMode {
      */
     double scaleInput(double dVal)  {
         double scaleOutput = 0;
-        scaleOutput = Math.pow(dVal,3);
+        if(dVal >= 0)
+        {
+            scaleOutput = (Math.atan((8*dVal)-4) + Math.atan(4))/(2*Math.atan(4));
+        }
+        else
+        {
+            scaleOutput = -((Math.atan((8*(dVal*-1))-4) + Math.atan(4))/(2*Math.atan(4)));
+            
+        }
         return scaleOutput;
     }
-
 
 }
