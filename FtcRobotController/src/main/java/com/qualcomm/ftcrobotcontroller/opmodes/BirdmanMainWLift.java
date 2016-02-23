@@ -75,10 +75,10 @@ public class BirdmanMainWLift extends OpMode {
     public void init() {
 
         //Wheels init
-        motorWheel0 = hardwareMap.dcMotor.get("motor_1");
-        motorWheel1 = hardwareMap.dcMotor.get("motor_2");
-        motorWheel2 = hardwareMap.dcMotor.get("motor_3");
-        motorWheel3 = hardwareMap.dcMotor.get("motor_4");
+        motorWheel0 = hardwareMap.dcMotor.get("motor_0");
+        motorWheel1 = hardwareMap.dcMotor.get("motor_1");
+        motorWheel2 = hardwareMap.dcMotor.get("motor_2");
+        motorWheel3 = hardwareMap.dcMotor.get("motor_3");
 
         //Direction of wheels
         motorWheel0.setDirection(DcMotor.Direction.REVERSE);
@@ -92,8 +92,8 @@ public class BirdmanMainWLift extends OpMode {
         rotateFast = true;
 
         //Lift init
-        motorRotate = hardwareMap.dcMotor.get("motor_6");
-        motorLift = hardwareMap.dcMotor.get("motor_7");
+        motorRotate = hardwareMap.dcMotor.get("motor_4");
+        motorLift = hardwareMap.dcMotor.get("motor_5");
 
 
         driveFast = true;

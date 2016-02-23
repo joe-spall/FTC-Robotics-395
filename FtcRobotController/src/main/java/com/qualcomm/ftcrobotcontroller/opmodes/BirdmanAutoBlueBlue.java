@@ -46,7 +46,7 @@ import java.lang.Math;
  */
 public class BirdmanAutoBlueBlue extends OpMode {
 
-    DcMotorController.DeviceMode devMode;
+
     DcMotorController wheelControllerFront;
     DcMotorController wheelControllerBack;
     DcMotorController liftController;
@@ -58,10 +58,17 @@ public class BirdmanAutoBlueBlue extends OpMode {
     DcMotor motorLift;
     boolean rotateFast;
     boolean checkEncoders;
-    boolean driveFast;
+
+    //In inches
+    final static double WHEEL_DIAMETER = 4.8;
+    final static double CIRCUMFRENCE = Math.PI*WHEEL_DIAMETER;
+    final static double ENCODER_CPR = 1440;
+    final static double LINEAR_DISTANCE_1 = 20;
+
+
 
     int state;
-    int numLoops;
+
 
     /**
      * Constructor
@@ -78,12 +85,12 @@ public class BirdmanAutoBlueBlue extends OpMode {
     public void init() {
         //State control
         state = 0;
-        devMode = DcMotorController.DeviceMode.READ_WRITE;
+
         //Wheels init
-        motorWheel0 = hardwareMap.dcMotor.get("motor_1");
-        motorWheel1 = hardwareMap.dcMotor.get("motor_2");
-        motorWheel2 = hardwareMap.dcMotor.get("motor_3");
-        motorWheel3 = hardwareMap.dcMotor.get("motor_4");
+        motorWheel0 = hardwareMap.dcMotor.get("motor_0");
+        motorWheel1 = hardwareMap.dcMotor.get("motor_1");
+        motorWheel2 = hardwareMap.dcMotor.get("motor_2");
+        motorWheel3 = hardwareMap.dcMotor.get("motor_3");
 
         //Direction of wheels
         motorWheel0.setDirection(DcMotor.Direction.REVERSE);
@@ -98,11 +105,11 @@ public class BirdmanAutoBlueBlue extends OpMode {
 
         checkEncoders = false;
         //Lift init
-        motorRotate = hardwareMap.dcMotor.get("motor_6");
-        motorLift = hardwareMap.dcMotor.get("motor_7");
+        motorRotate = hardwareMap.dcMotor.get("motor_4");
+        motorLift = hardwareMap.dcMotor.get("motor_5");
 
-        numLoops = 0;
-        driveFast = true;
+
+
 
         //Lift slide controller init
         liftController = hardwareMap.dcMotorController.get("liftController");
@@ -117,53 +124,30 @@ public class BirdmanAutoBlueBlue extends OpMode {
     public void loop() {
 
         //Start
-        if(state == 0)
-        {
-            resetEncoders();
+        if (state == 0) {
+            changeEncoders("reset");
             state++;
         }//Drive forward
-        else if(state == 1)
-        {
-            startEncoders();
+        else if (state == 1) {
 
-                motorPower(1.0,1.0);
+            setMotorPosition(114,114);
+            setMotorPower(0.3,0.3);
+            changeEncoders("run");
+            state++;
+        }//Wait to finish
+        else if (state == 2) {
 
 
 
-
-            if(wheelControllerFront.getMotorControllerDeviceMode() == DcMotorController.DeviceMode.READ_ONLY)
-            {
-                if(motorEncoderCheck(200,200))
-                {
-                    resetEncoders();
-                    motorPower(0.0,0.0);
-                    state++;
-                }
-
-            }
-            switchToRead(numLoops);
-
-        }//Turn
-        else if(state == 2)
-        {
-
-            motorPower(1.0,1.0);
-            if(motorEncoderCheck(100,100))
-            {
-                resetEncoders();
-                motorPower(0.0, 0.0);
-                state++;
-            }
         }//Stop
-        else if(state == 3)
-        {
+        else if (state == 3) {
             stop();
         }
 
         telemetry.addData("Text", "Auto");
         telemetry.addData("current state", state);
 
-        numLoops++;
+
     }
 
     /*
@@ -172,7 +156,7 @@ public class BirdmanAutoBlueBlue extends OpMode {
      * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
      */
     @Override
-     public void stop() {
+    public void stop() {
         motorWheel0.setPower(0);
         motorWheel1.setPower(0);
         motorWheel2.setPower(0);
@@ -180,804 +164,50 @@ public class BirdmanAutoBlueBlue extends OpMode {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //Reset encoders
-    public void resetEncoders()
-    {
-        motorWheel0.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorWheel1.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorWheel2.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorWheel3.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-    }
-
-    //Start encoders
-    public void startEncoders()
-    {
-        motorWheel0.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorWheel1.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorWheel2.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorWheel3.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-    }
-
-    //Motor power set
-    public void motorPower(double powerLeft, double powerRight)
-    {
-        if(wheelControllerFront.getMotorControllerDeviceMode() == DcMotorController.DeviceMode.WRITE_ONLY) {
-            motorWheel0.setPower(powerLeft);
-            motorWheel1.setPower(powerRight);
-        }
-    }
-
-    //Motor encoder check
-    public boolean motorEncoderCheck(double goalLeft, double goalRight)
-    {   //Check success
-
-        System.out.println("checked");
-            boolean returnState = false;
-
-            //Check position
-            if (motorWheel1.getCurrentPosition() >= goalRight && motorWheel0.getCurrentPosition() <= goalLeft) {
-                returnState = true;
-            }
-            wheelControllerBack.setMotorControllerDeviceMode(DcMotorController.DeviceMode.WRITE_ONLY);
-            wheelControllerFront.setMotorControllerDeviceMode(DcMotorController.DeviceMode.WRITE_ONLY);
-
-            //Return success
-            return returnState;
-
-
-    }
-
-    public void switchToRead(int numberLoops)
-    {
-
-        if(numberLoops%17==0)
+    public void changeEncoders(String change) {
+        if(change.equals("reset"))
         {
-            wheelControllerBack.setMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
-            wheelControllerFront.setMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
-            telemetry.addData("current state", motorWheel1.getCurrentPosition());
-            System.out.println("switched");
-            System.out.println(motorWheel1.getCurrentPosition());
-            System.out.println(motorWheel0.getCurrentPosition());
-
+            motorWheel0.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+            motorWheel1.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+            motorWheel2.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+            motorWheel3.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         }
 
+        if(change.equals("run"))
+        {
+            motorWheel0.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+            motorWheel1.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+            motorWheel2.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+            motorWheel3.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        }
     }
+
+    public void setMotorPower(double leftPow, double rightPow)
+    {
+        motorWheel0.setPower(leftPow);
+        motorWheel1.setPower(rightPow);
+        motorWheel2.setPower(leftPow);
+        motorWheel3.setPower(rightPow);
+    }
+
+    public void setMotorPosition(double leftDis, double rightDis)
+    {
+        double leftStep = (leftDis/CIRCUMFRENCE)*ENCODER_CPR;
+        double rightStep = (rightDis/CIRCUMFRENCE)*ENCODER_CPR;
+        motorWheel0.setTargetPosition((int)leftStep);
+        motorWheel1.setTargetPosition((int)rightStep);
+        motorWheel2.setTargetPosition((int)leftStep);
+        motorWheel3.setTargetPosition((int)rightStep);
+
+    }
+
+
+
+
+
+
+
+
 
 }

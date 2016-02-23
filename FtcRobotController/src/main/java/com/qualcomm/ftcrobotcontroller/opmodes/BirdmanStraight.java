@@ -39,8 +39,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import java.text.DecimalFormat;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 /*
  * An example loop op mode where the robot will drive in
@@ -62,8 +62,10 @@ public class BirdmanStraight extends OpMode {
     DcMotor motor1;
     DcMotor motor2;
     DcMotor motor3;
+    DcMotor motorRotate;
 
-
+    ColorSensor sensorRGB;
+    boolean ledOn;
 
     /* This is the port on the Core Device Interface Module        */
     /* in which the navX-Model Device is connected.  Modify this  */
@@ -71,14 +73,17 @@ public class BirdmanStraight extends OpMode {
     private final int NAVX_DIM_I2C_PORT = 0;
     private AHRS navx_device;
     private navXPIDController yawPIDController;
-    private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime;
 
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
-    private final double TARGET_ANGLE_DEGREES = 0.0;
-    private final double TOLERANCE_DEGREES = 2.0;
+
     private final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
     private final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
+
+
+    private final double TARGET_ANGLE_DEGREES = 0.0;
+    private final double TOLERANCE_DEGREES = 2.0;
     private final double YAW_PID_P = 0.005;
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
@@ -90,7 +95,7 @@ public class BirdmanStraight extends OpMode {
 
     /* Tune this threshold to adjust the sensitivy of the */
   /* Collision detection.                               */
-    private final double COLLISION_THRESHOLD_DELTA_G = 1;
+    private final double COLLISION_THRESHOLD_DELTA_G = 1.25;
 
     double last_world_linear_accel_x;
     double last_world_linear_accel_y;
@@ -98,6 +103,8 @@ public class BirdmanStraight extends OpMode {
 
     private boolean collision_state;
 
+    public boolean isOnWhite;
+    public int state;
 
 
     @Override
@@ -106,23 +113,20 @@ public class BirdmanStraight extends OpMode {
         motor1 = hardwareMap.dcMotor.get("motor_1");
         motor2 = hardwareMap.dcMotor.get("motor_2");
         motor3 = hardwareMap.dcMotor.get("motor_3");
+        motorRotate = hardwareMap.dcMotor.get("motor_4");
 
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);
 
-        motor1.setDirection(DcMotor.Direction.REVERSE);
-        motor3.setDirection(DcMotor.Direction.REVERSE);
-
-        /* If possible, use encoders when driving, as it results in more */
-        /* predictable drive system response.                           */
-        //leftMotor.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        //rightMotor.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motor0.setDirection(DcMotor.Direction.REVERSE);
+        motor2.setDirection(DcMotor.Direction.REVERSE);
 
         /* Create a PID Controller which uses the Yaw Angle as input. */
         yawPIDController = new navXPIDController( navx_device,
                 navXPIDController.navXTimestampedDataSource.YAW);
+
 
         /* Configure the PID controller */
         yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
@@ -132,95 +136,247 @@ public class BirdmanStraight extends OpMode {
         yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
         yawPIDController.enable(true);
 
+
         df = new DecimalFormat("#.##");
 
-        last_world_linear_accel_x = 0.0;
-        last_world_linear_accel_y = 0.0;
+
         collision_state = false;
+
+        sensorRGB = hardwareMap.colorSensor.get("mr");
+        sensorRGB.enableLed(true);
+
+        ledOn = true;
+        isOnWhite = false;
+
+
+        navx_device.zeroYaw();
+        yawPIDResult = new navXPIDController.PIDResult();
     }
 
-    public double limit(double a) {
-        return Math.min(Math.max(a, MIN_MOTOR_OUTPUT_VALUE), MAX_MOTOR_OUTPUT_VALUE);
-    }
 
     @Override
     public void start() {
-        /* reset the navX-Model device yaw angle so that whatever direction */
-        /* it is currently pointing will be zero degrees.                   */
-        navx_device.zeroYaw();
-        yawPIDResult = new navXPIDController.PIDResult();
 
+
+        runtime = new ElapsedTime();
+        state = 0;
+        last_world_linear_accel_x = 0.0;
+        last_world_linear_accel_y = 0.0;
+        while(runtime.time() < 5.0)
+        {
+
+        }
     }
 
     @Override
     public void loop() {
-        if ( !calibration_complete ) {
-            /* navX-Micro Calibration completes automatically ~15 seconds after it is
-            powered on, as long as the device is still.  To handle the case where the
-            navX-Micro has not been able to calibrate successfully, hold off using
-            the navX-Micro Yaw value until calibration is complete.
-             */
-            calibration_complete = !navx_device.isCalibrating();
-            if ( calibration_complete ) {
-                navx_device.zeroYaw();
-            } else {
-                telemetry.addData("navX-Micro", "Startup Calibration in Progress");
-            }
-        } else {
-            /* Wait for new Yaw PID output values, then update the motors
-               with the new PID value with each new output value.
-             */
 
-            /* Drive straight forward at 1/2 of full drive speed */
+            double drive_speed = 0.5;
+            if(state == 0)
+            {
+                if(runtime.time() < 10.0) {
+                    if (!collision_state) {
+                       // if(runtime.time() > 7.5)
+                       // {
+                        //    checkCollision();
+                        //}
 
-            double drive_speed = 0.33;
-            if (!collision_state) {
-                checkCollision();
-                if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
-                    if (yawPIDResult.isOnTarget()) {
                         motor0.setPower(drive_speed);
                         motor1.setPower(drive_speed);
                         motor2.setPower(drive_speed);
                         motor3.setPower(drive_speed);
 
-                        telemetry.addData("Motor Output", df.format(drive_speed) + ", " +
-                                df.format(drive_speed));
-                    } else {
-                        double output = yawPIDResult.getOutput();
-                        motor0.setPower(limit(drive_speed + output));
-                        motor1.setPower(limit(drive_speed - output));
-                        motor2.setPower(limit(drive_speed + output));
-                        motor3.setPower(limit(drive_speed - output));
 
-                        telemetry.addData("Motor Output", df.format(limit(drive_speed + output)) + ", " +
-                                df.format(limit(drive_speed - output)));
+
+                    } else {
+
+
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        state++;
                     }
-                } else {
-                /* No sensor update has been received since the last time  */
-                /* the loop() function was invoked.  Therefore, there's no */
-                /* need to update the motors at this time.                 */
                 }
-                telemetry.addData("Yaw", df.format(navx_device.getYaw()));
-                telemetry.addData("4 Collision", "------");
+                else
+                {
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    state++;
+                }
             }
-            else
+            else if(state == 1)
             {
-                telemetry.addData("4 Collision", "Collide");
+                double startTime = runtime.time();
+                while(!isOnWhite && (runtime.time()-startTime) < 0.5)
+                {
+                    whiteDetect();
+                    motor0.setPower(-0.25);
+                    motor1.setPower(-0.25);
+                    motor2.setPower(-0.25);
+                    motor3.setPower(-0.25);
+                }
+                state++;
+            }
+            else if(state == 2)
+            {
+                if (yawPIDController.isNewUpdateAvailable(yawPIDResult))
+                {
+                    double output = navx_device.getYaw();
+                    if(!(output > -3 && output < 3))
+                    {
+                        motor1.setPower(0.25);
+                        motor3.setPower(0.25);
+                    }
+                    else if(output > -3 && output < 3)
+                    {
+                        motor1.setPower(0);
+                        motor3.setPower(0);
+                        state++;
+                    }
+
+                }
+            }
+            else if(state == 3)
+            {
+                double startTime = runtime.time();
+                int direction = 0;
+                while(direction < 2)
+                {
+                        while(!isOnWhite && (runtime.time()-startTime) < 1.5)
+                        {
+                            whiteDetect();
+                            motor0.setPower(-0.25);
+                            motor1.setPower(-0.25);
+                            motor2.setPower(-0.25);
+                            motor3.setPower(-0.25);
+                        }
+
+                        while(!isOnWhite && ( runtime.time()-startTime) < 3)
+                        {
+                            whiteDetect();
+                            motor0.setPower(0.25);
+                            motor1.setPower(0.25);
+                            motor2.setPower(0.25);
+                            motor3.setPower(0.25);
+                        }
+                        if(isOnWhite)
+                        {
+                            break;
+                        }
+                        direction++;
+
+                }
+                motor0.setPower(0);
+                motor1.setPower(0);
+                motor2.setPower(0);
+                motor3.setPower(0);
+                if(isOnWhite)
+                {
+                    state++;
+                }
+                else
+                {
+                    stop();
+                }
+            }
+            else if(state == 4)
+            {
+                double startTime = runtime.time();
+                while((runtime.time()-startTime) < 0.1)
+                {
+
+                    motor0.setPower(0.25);
+                    motor1.setPower(0.25);
+                    motor2.setPower(0.25);
+                    motor3.setPower(0.25);
+                }
+                state++;
+            }
+            else if(state == 5) {
+                if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
+                    double output = navx_device.getYaw();
+                    if (!(output < -87 && output > -93)) {
+                        motor0.setPower(0.25);
+                        motor1.setPower(-0.25);
+                        motor2.setPower(0.25);
+                        motor3.setPower(-0.25);
+                    } else if (output < -87 && output > -93) {
+                        isOnWhite = false;
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        state++;
+                    }
+                }
+            }
+            else if(state == 6)
+            {
+                double startTime = runtime.time();
+                while((runtime.time()-startTime) < 0.45)
+                {
+
+                    motor0.setPower(0.25);
+                    motor1.setPower(0.25);
+                    motor2.setPower(0.25);
+                    motor3.setPower(0.25);
+                }
+                state++;
                 motor0.setPower(0);
                 motor1.setPower(0);
                 motor2.setPower(0);
                 motor3.setPower(0);
             }
+            else if(state == 7)
+            {
+                double startTime = runtime.time();
+
+                while((runtime.time()-startTime) < 3)
+                {
+                    motorRotate.setPower(-1);
+                }
+                state++;
+            }
+            else
+            {
+
+                motorRotate.setPower(0);
+                motor0.setPower(0);
+                motor1.setPower(0);
+                motor2.setPower(0);
+                motor3.setPower(0);
+                telemetry.addData("state:", "completed");
+                stop();
+            }
+        telemetry.addData("state:", Integer.toString(state));
+        telemetry.addData("collision:", Boolean.toString(collision_state));
+        telemetry.addData("on white:", Boolean.toString(isOnWhite));
+        if (yawPIDController.isNewUpdateAvailable(yawPIDResult))
+        {
+            double output = yawPIDResult.getOutput();
+            telemetry.addData("current yaw:", Double.toString(output));
         }
     }
 
     @Override
-    public void stop() {
+    public void stop()
+    {
+        telemetry.addData("end state:", Integer.toString(state));
         navx_device.close();
+        motor0.setPower(0);
+        motor1.setPower(0);
+        motor2.setPower(0);
+        motor3.setPower(0);
+        motorRotate.setPower(0);
+
     }
 
 
-    public void checkCollision() {
+    public void checkCollision()
+    {
         boolean collisionDetected = false;
 
 
@@ -230,14 +386,28 @@ public class BirdmanStraight extends OpMode {
         double curr_world_linear_accel_y = navx_device.getWorldLinearAccelY();
         double currentJerkY = curr_world_linear_accel_y - last_world_linear_accel_y;
         last_world_linear_accel_y = curr_world_linear_accel_y;
-        System.out.println(currentJerkX);
-        System.out.println(currentJerkY);
 
-        if ( ( Math.abs(currentJerkX) > COLLISION_THRESHOLD_DELTA_G ) ||
-                ( Math.abs(currentJerkY) > COLLISION_THRESHOLD_DELTA_G) ) {
+
+        if ((Math.abs(currentJerkX) > COLLISION_THRESHOLD_DELTA_G) ||
+                (Math.abs(currentJerkY) > COLLISION_THRESHOLD_DELTA_G)) {
+
             collisionDetected = true;
         }
 
         collision_state = collisionDetected;
+    }
+
+    public void whiteDetect()
+    {
+        double alphaValue = sensorRGB.alpha();
+        double redValue = sensorRGB.red();
+        double greenValue = sensorRGB.green();
+        double blueValue = sensorRGB.blue();
+        double totalValue = alphaValue + redValue + greenValue + blueValue;
+        if(totalValue >= 3)
+        {
+             isOnWhite = true;
+        }
+        telemetry.addData("color total:", Double.toString(alphaValue+redValue+greenValue+blueValue));
     }
 }

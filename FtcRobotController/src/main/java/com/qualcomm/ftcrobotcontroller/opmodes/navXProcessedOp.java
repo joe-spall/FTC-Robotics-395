@@ -49,8 +49,7 @@ import java.text.DecimalFormat;
  */
 public class navXProcessedOp extends OpMode {
 
-    DcMotor motor2;
-    DcMotor motor3;
+
     /* This is the port on the Core Device Interace Module */
   /* in which the navX-Micro is connected.  Modify this  */
   /* depending upon which I2C port you are using.        */
@@ -65,10 +64,9 @@ public class navXProcessedOp extends OpMode {
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData);
-        motor2 = hardwareMap.dcMotor.get("motor_3");
-        motor3 = hardwareMap.dcMotor.get("motor_4");
 
-        motor3.setDirection(DcMotor.Direction.REVERSE);
+
+
 
     }
 
@@ -107,16 +105,7 @@ public class navXProcessedOp extends OpMode {
             yaw = df.format(navx_device.getYaw());
             double pitchNum = navx_device.getPitch();
             pitch = df.format(navx_device.getPitch());
-            if(pitchNum >= 65.0)
-            {
-                motor2.setPower(pitchNum/90);
-                motor3.setPower(pitchNum/90);
-            }
-            else
-            {
-                motor2.setPower(0);
-                motor3.setPower(0);
-            }
+
             roll = df.format(navx_device.getRoll());
             ypr = yaw + ", " + pitch + ", " + roll;
             compass_heading = df.format(navx_device.getCompassHeading());

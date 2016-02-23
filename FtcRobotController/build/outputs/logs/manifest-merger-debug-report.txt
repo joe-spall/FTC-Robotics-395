@@ -82,6 +82,7 @@ application
 ADDED from AndroidManifest.xml:39:3
 MERGED from :FtcCommon-release::21:5
 MERGED from :Analytics-release::19:5
+MERGED from FTC-Robotics-395:navx_ftc-release:unspecified:11:5
 	android:label
 		ADDED from AndroidManifest.xml:42:5
 	android:exported
@@ -204,6 +205,7 @@ MERGED from :FtcCommon-release::7:5
 MERGED from :ModernRobotics-release::5:5
 MERGED from :Analytics-release::5:5
 MERGED from :WirelessP2p-release::5:5
+MERGED from FTC-Robotics-395:navx_ftc-release:unspecified:7:5
 	android:targetSdkVersion
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0

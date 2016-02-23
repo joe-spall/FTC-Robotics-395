@@ -34,7 +34,9 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 
 import com.kauailabs.navx.ftc.AHRS;
@@ -52,13 +54,17 @@ public class BirdmanMainWSensor extends OpMode {
     DcMotorController wheelControllerFront;
     DcMotorController wheelControllerBack;
     DcMotorController liftController;
+    DeviceInterfaceModule deviceInterfaceModule;
     DcMotor motorWheel0;
     DcMotor motorWheel1;
     DcMotor motorWheel2;
     DcMotor motorWheel3;
     DcMotor motorRotate;
     DcMotor motorLift;
-    boolean rotateFast;
+    Servo leftZip;
+    Servo rightZip;
+    boolean leftZipUp;
+    boolean rightZipUp;
 
     boolean driveFast;
     boolean preventTip;
@@ -98,8 +104,6 @@ public class BirdmanMainWSensor extends OpMode {
         wheelControllerFront = hardwareMap.dcMotorController.get("wheelControllerFront");
         wheelControllerBack = hardwareMap.dcMotorController.get("wheelControllerBack");
 
-        //Rotate fast
-        rotateFast = true;
 
         //Lift init
         motorRotate = hardwareMap.dcMotor.get("motor_4");
@@ -114,8 +118,17 @@ public class BirdmanMainWSensor extends OpMode {
         //Lift slide controller init
         liftController = hardwareMap.dcMotorController.get("liftController");
 
+        //
+        deviceInterfaceModule = hardwareMap.deviceInterfaceModule.get("dim");
+
+
+        leftZip = hardwareMap.servo.get("leftZip");
+        rightZip = hardwareMap.servo.get("rightZip");
+        rightZipUp = true;
+        leftZipUp = true;
+
         //Sensor
-        navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
+        navx_device = AHRS.getInstance(deviceInterfaceModule,
                 NAVX_DIM_I2C_PORT,
                 AHRS.DeviceDataType.kProcessedData);
     }
@@ -233,6 +246,7 @@ public class BirdmanMainWSensor extends OpMode {
         boolean bPushSlow = gamepad1.b;
         boolean xPushTip = gamepad1.x;
         boolean yPushNoTip = gamepad1.y;
+
 
         if (aPushFast) {
             driveFast = true;
@@ -355,33 +369,49 @@ public class BirdmanMainWSensor extends OpMode {
 
         //Lift rotate
         float rotate = gamepad2.right_stick_y;
-        boolean aRotateSlow = gamepad2.a;
-        boolean bRotateFast = gamepad2.b;
+        boolean yLeftUp = gamepad2.y;
+        boolean xLeftDown = gamepad2.x;
+        boolean bRightUp = gamepad2.b;
+        boolean aRightDown = gamepad2.a;
 
-        if (aRotateSlow) {
-            rotateFast = false;
+        if (yLeftUp) {
+            leftZipUp = true;
         }
 
-        if (bRotateFast) {
-            rotateFast = true;
+        if (xLeftDown) {
+            leftZipUp = false;
         }
 
-        telemetry.addData("rotate fast", "rotate fast: " + Boolean.toString(rotateFast));
+        if(bRightUp){
+            rightZipUp = true;
+        }
+
+        if(aRightDown)
+        {
+            rightZipUp = false;
+        }
 
 
         //Range and scale
         rotate = Range.clip(rotate, -1, 1);
         rotate = (float) scaleInput(rotate);
-
+        motorRotate.setPower(rotate);
+        telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate));
 
         //Set power
-        if (rotateFast == true) {
-            motorRotate.setPower(rotate);
-            telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate));
+        if (leftZipUp) {
+            leftZip.setPosition(0.95);
 
-        } else if (rotateFast == false) {
-            motorRotate.setPower(rotate / 2);
-            telemetry.addData("rotate pwr", "rotate pwr: " + String.format("%.2f", rotate / 2));
+        } else if (!leftZipUp) {
+            leftZip.setPosition(0.4);
+        }
+
+        if(rightZipUp)
+        {
+            rightZip.setPosition(0.20);
+        }else if(!rightZipUp)
+        {
+            rightZip.setPosition(0.75);
         }
 
 
