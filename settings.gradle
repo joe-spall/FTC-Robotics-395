@@ -1,3 +1,2 @@
 // FTC Apps
-include(':FtcRobotController')
-include(':navx_ftc-release')
+include (':FtcRobotController')
